@@ -11,8 +11,6 @@ function Username({ usernameSelected, setUsernameSelected }) {
     setUsernameSelected(true);
     navigate("chathome", {
       state: {
-        usernameSelected,
-        // setUsernameSelected,
         username: e.target[0].value,
       },
     });
