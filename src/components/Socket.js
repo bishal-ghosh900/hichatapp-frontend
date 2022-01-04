@@ -1,5 +1,5 @@
 import io from "socket.io-client";
-const socket = io("https://hichat-api.herokuapp.com/", {
+const socket = io(process.env.REACT_APP_URL, {
   transports: ["websocket", "polling"],
   autoConnect: false,
 });
