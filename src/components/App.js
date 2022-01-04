@@ -1,45 +1,45 @@
-// import logo from "./logo.svg";
 import "../styles/App.css";
-import socket from "./Socket";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Username from "./Username";
 import { Route, Routes } from "react-router-dom";
 import ChatHome from "./ChatHome";
+import NotSupported from "./NotSupported";
 // transports is required here.
 function App() {
-  const [info, setInfo] = useState("");
-  socket.emit("chat", "Hi");
-
   const [usernameSelected, setUsernameSelected] = useState(false);
+  const [width, setWidth] = useState(window.innerWidth);
 
-  useEffect(() => {
-    socket.on("message", (data) => {
-      setInfo(data);
-    });
+  window.addEventListener("resize", () => {
+    setWidth(window.innerWidth);
   });
+
   return (
     <div className="App">
       <header className="App-header">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Username
-                usernameSelected={usernameSelected}
-                setUsernameSelected={setUsernameSelected}
-              />
-            }
-          />
-          <Route
-            path="/chathome"
-            element={
-              <ChatHome
-                usernameSelected={usernameSelected}
-                setUsernameSelected={setUsernameSelected}
-              />
-            }
-          />
-        </Routes>
+        {width >= 500 ? (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Username
+                  usernameSelected={usernameSelected}
+                  setUsernameSelected={setUsernameSelected}
+                />
+              }
+            />
+            <Route
+              path="/chathome"
+              element={
+                <ChatHome
+                  usernameSelected={usernameSelected}
+                  setUsernameSelected={setUsernameSelected}
+                />
+              }
+            />
+          </Routes>
+        ) : (
+          <NotSupported />
+        )}
       </header>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import MessageHeader from "./MessageHeader";
 import MessageInput from "./MessageInput";
 import MessageMain from "./MessageMain";
@@ -12,7 +12,6 @@ function MessageBox({
   setSelectedUserUpdated,
 }) {
   useEffect(() => {
-    // console.log(users);
     if (selectedUserUpdated) {
       setSelectedUserUpdated(false);
     }

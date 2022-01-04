@@ -18,7 +18,6 @@ function MessageMain({
       );
 
       if (!!tempUser && !!tempUser.messages) {
-        // console.log(tempUser.messages);
         setMessages([...tempUser.messages]);
       }
     }

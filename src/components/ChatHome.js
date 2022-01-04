@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import socket from "./Socket";
 import MessageBox from "./MessageBox";
 import Sidebar from "./Sidebar";
@@ -10,16 +10,15 @@ function ChatHome({ usernameSelected, setUsernameSelected }) {
   const [selectedUser, setSelectedUser] = useState({});
   const [selectedUserUpdated, setSelectedUserUpdated] = useState(false);
 
-  const location = useLocation();
-
   useEffect(() => {
     let cu;
     let alluser = [];
 
+    // user
     socket.removeAllListeners("user");
     socket.on("user", (users) => {
       users.forEach((user) => {
-        if (user.userId === socket.id) {
+        if (user.userId === socket.userId) {
           user.self = true;
           cu = user;
           setCurrentUser(user);
@@ -28,17 +27,22 @@ function ChatHome({ usernameSelected, setUsernameSelected }) {
         }
         user.messages = [];
       });
-      alluser = [...users.filter((user) => user.userId !== socket.id)];
+      alluser = [...users.filter((user) => user.userId !== socket.userId)];
       alluser.unshift(cu);
       setUsers(alluser);
     });
 
+    // user connected
     socket.removeAllListeners("user connected");
     socket.on("user connected", (user) => {
-      user.messages = [];
-      setUsers([...users, user]);
+      const tempUser = users.find((u) => u.userId === user.userId);
+      if (!!!tempUser) {
+        user.messages = [];
+        setUsers([...users, user]);
+      }
     });
 
+    // user disconnected
     socket.removeAllListeners("user disconnected");
     socket.on("user disconnected", ({ userId }) => {
       const allUsers = [...users.filter((user) => user.userId !== userId)];
@@ -48,6 +52,15 @@ function ChatHome({ usernameSelected, setUsernameSelected }) {
       }
     });
 
+    // session
+    socket.removeAllListeners("session");
+    socket.on("session", ({ sessionId, userId }) => {
+      socket.auth.sessionId = sessionId;
+      socket.userId = userId;
+      localStorage.setItem("sessionId", sessionId);
+    });
+
+    // private message
     socket.removeAllListeners("private message");
     socket.on("private message", ({ content, from }) => {
       const tempUser = users.find((user) => user.userId === from);
@@ -61,7 +74,7 @@ function ChatHome({ usernameSelected, setUsernameSelected }) {
         tempUser.incomingMessages = !!tempUser.incomingMessages
           ? tempUser.incomingMessages
           : 0;
-        if (from != selectedUser.userId) {
+        if (from !== selectedUser.userId) {
           tempUser.incomingMessages += 1;
         } else {
           tempUser.incomingMessages = 0;
@@ -85,6 +98,7 @@ function ChatHome({ usernameSelected, setUsernameSelected }) {
       }
     });
 
+    // connect_error
     socket.removeAllListeners("connect_error");
     socket.on("connect_error", (err) => {
       if (err.message === "Username is invalid") {
@@ -94,7 +108,7 @@ function ChatHome({ usernameSelected, setUsernameSelected }) {
   }, [users.length, selectedUser?.userId]);
   return (
     <div className="chathome">
-      {location.state && location.state.username && usernameSelected ? (
+      {usernameSelected ? (
         <>
           <Sidebar
             users={users}

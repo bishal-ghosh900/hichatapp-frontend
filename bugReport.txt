@@ -1,3 +1,0 @@
-Back button is causing problem
-
-Some times usernames in sidebar will not change its color even though it is selected. It will happen just the first time any new user entered in the chat, and that time , that particular user got a new message , then if any other user was selected and we select the new user to see the new messages to that user, then the username will not change its color in sidebar
